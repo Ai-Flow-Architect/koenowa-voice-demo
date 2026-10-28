@@ -321,7 +321,7 @@
   const S = {
     points: 1000,
     casts: [
-      { id: 1, name: 'あかり', ini: 'A', color: '#7a5af8', online: true,  gifts: 12800, minutes: 310, bio: 'やさしい声で雑談・寝落ちトークが得意です。', tone: 440 },
+      { id: 1, name: 'あかり', ini: 'A', color: '#7a5af8', online: true,  gifts: 9200, minutes: 310, bio: 'やさしい声で雑談・寝落ちトークが得意です。', tone: 440 },
       { id: 2, name: 'みお',   ini: 'M', color: '#f0668b', online: true,  gifts: 4200,  minutes: 120, bio: '元気な声でお悩み相談・応援トークをします。', tone: 523 },
       { id: 3, name: 'りん',   ini: 'R', color: '#2b9fd9', online: false, gifts: 36000, minutes: 980, bio: '落ち着いた低めの声。朗読・ASMR系が人気。', tone: 330 },
       { id: 4, name: 'ゆい',   ini: 'Y', color: '#1f9d6a', online: true,  gifts: 900,   minutes: 40,  bio: '新人です。ゲーム実況トークが好き。', tone: 587 },
@@ -355,8 +355,9 @@
     const t = $('#toast'); t.textContent = msg; t.classList.add('show');
     clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800);
   }
-  function openSheet(html) { $('#sheet').innerHTML = html; $('#overlay').classList.add('show'); }
-  function closeSheet() { $('#overlay').classList.remove('show'); }
+  let sheetOnClose = null;
+  function openSheet(html, onClose) { sheetOnClose = onClose || null; $('#sheet').innerHTML = html; $('#overlay').classList.add('show'); }
+  function closeSheet() { $('#overlay').classList.remove('show'); const f = sheetOnClose; sheetOnClose = null; if (f) f(); }
   $('#overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeSheet(); });
 
   function updatePoints() {
@@ -592,8 +593,9 @@
         <div class="stat"><b>${fmt(call.gifts)}</b><span>ギフトpt</span></div>
       </div>
       <p class="muted">本番ではここで通話の評価・リピート予約などを表示できます。</p>
-      <button class="btn full" id="callClose">キャストページへ戻る</button>`);
-    $('#callClose').addEventListener('click', () => { closeSheet(); renderDetail(c.id); S.nav = ['s-list']; show('s-detail', { back: true }); });
+      <button class="btn full" id="callClose">キャストページへ戻る</button>`,
+      () => { renderDetail(c.id); S.nav = ['s-list']; show('s-detail', { back: true }); });
+    $('#callClose').addEventListener('click', () => closeSheet());
   }
 
   // ====== ⑤ ギフト送付 ======
